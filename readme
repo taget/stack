@@ -1,0 +1,22 @@
+script for openstack stackalytics
+
+will collect user contributions from start_date to end_date which
+are added to usr.list.
+include 
+
+Requrments:
+usr.list
+
+usage:
+python stack.py [start_date] [end_date]
+start_date by default is 2011-11-11
+end_date by default is Now
+
+
+10) We need a script that tracks
+a.  DCS team reviews, commits, blueprints, bugs in a given date-range  (typically a month)
+b.  “ “ a release
+c.  We should be able to have the team names in a file that we can update that is read by script
+d.  Stackalaytics has an API that allows generating the above script.
+e.  Any volunteers?
+

@@ -1,0 +1,4 @@
+[conf]
+metric = commits,marks,bpc,resolved-bugs
+project = nova,neutron
+show = name,metric
