@@ -4,25 +4,25 @@
 #  stack.py
 #  require for usr.list:
 #  username: gerrit_id
-#   
+#
 #  Copyright 2015 Eli Qiao <liyong.qiao@intel.com>
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
-#  
-#  
+#
+#
 import httplib2
 import socks
 import json
@@ -43,29 +43,27 @@ class stackaly(base):
         self._start_date = start_date
         self._end_date = end_date
         # only used for query
-        self._ustart_date = str(int(util.date_to_time(start_date))) 
-        self._uend_date = str(int(util.date_to_time(end_date))) 
-        self.usr_list = [] 
+        self._ustart_date = str(int(util.date_to_time(start_date)))
+        self._uend_date = str(int(util.date_to_time(end_date)))
+        self.usr_list = []
         f =  open('./usr.list')
         for s in f.readlines():
-            u = user(s)
+            if len(s) > 1:
+                u = user(s)
             self.usr_list.append(u)
+        self.conn = httplib2.Http()
 
-        self.conn = httplib2.Http(proxy_info =
-                                  httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP,
-                                                     'proxy-mu.intel.com', 911))
-
-      
         self._metric = self._conf.get('metric').split(',')
-        self._project= self._conf.get('project').split(',')
+#        self._project= self._conf.get('project').split(',')
         self._show = self._conf.get('show').split(',')
 
     def get_metric_for_usr(self, usr, metric="commits"):
         request_options = {'company': 'intel',
-                           'project_type': 'openstack',
+                           'project_type': 'all',
                            'start_date': self._ustart_date,
                            'end_date': self._uend_date,
-                           'metric': metric}
+                           'metric': metric,
+                           'release': 'all'}
 
         if not usr.user_name == 'intel':
             request_options.update({'user_id': usr.gerrit_id})
@@ -74,6 +72,9 @@ class stackaly(base):
         op = util.genreate_options(request_options)
         out = util.get_companies(self.conn, self._base_url, op)
         out_dict = json.loads(out)
+
+        # all_stats = 0
+        all_stats = 0
         for it in out_dict['stats']:
             for i in self._show:
                 if it.get(i):
@@ -82,7 +83,8 @@ class stackaly(base):
             out_put = out_put + '\r\n'
             # add meta for each project, used to summrize all metris of users
             usr.append_meta(metric, it['name'], int(it.get('metric')))
-
+            all_stats += int(it.get('metric'))
+        usr.append_meta(metric, 'all', all_stats)
         usr.append_record(metric, out_put)
 
     def get_aly_for_all_usr(self):
@@ -101,13 +103,12 @@ class stackaly(base):
         # fake a user for dcs to compute metric of all member
         dcs_usr = user("dcs: dcs")
         for m in self._metric:
-            for p in self._project:
-                val = 0
-                for u in self.usr_list:
-                    val += u.metric(m, p)
-                dcs_usr.append_meta(m, p, val)
-                msg.write('%s\t\t%s\t\t[%d]\r\n' % (m, p, val))
-        # summary 
+            val = 0
+            for u in self.usr_list:
+                val += u.metric(m, 'all')
+            dcs_usr.append_meta(m, 'all', val)
+            msg.write('%s\t\t%s\t\t[%d]\r\n' % (m, 'all', val))
+        # summary
         msg.seek(0)
         print msg.read()
 

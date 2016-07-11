@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  
-#  
+#
+#
 #  Copyright 2015 Eli Qiao <liyong.qiao@intel.com>
-#  
+#
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
-#  
+#
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
-#  
-#  
+#
+#
 
 
 import httplib2
@@ -67,11 +67,11 @@ def genreate_options(dict_opts):
 
 
 def get_options(options):
-    request_options = {'company': 'intel', 'project_type': 'openstack'}
+    request_options = {}
     # to generate a options dict
     # return : dict with opthions:
     if not options.start_date:
-        # todo 
+        # todo
         print "require start date"
         raise
         # todo need a default maybe 1 st
@@ -87,6 +87,8 @@ def get_options(options):
 
     if options.release:
         request_options.update({'release': options.release})
+    else:
+        request_options.update({'release': 'all'})
 
     if options.metric:
         request_options.update({'metric': options.metric})
@@ -95,9 +97,9 @@ def get_options(options):
         request_options.update({'user_id': options.userid})
 
     return request_options
-  
+
 def main():
-    parser = OptionParser()  
+    parser = OptionParser()
     parser.add_option("-s", "--start", dest="start_date",
         help="begin date, '%Y-%m-%d'", default=None)
     parser.add_option("-e", "--end", dest="end_date", default=None,
@@ -137,7 +139,7 @@ def test_date():
 def test():
     test_options()
     test_date()
-    
-    
+
+
 if __name__ == '__main__':
     main()

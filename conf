@@ -1,4 +1,4 @@
 [conf]
 metric = commits,marks,bpc,resolved-bugs
-project = nova,neutron
+#project = nova,neutron,magnum
 show = name,metric
