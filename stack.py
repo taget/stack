@@ -76,7 +76,7 @@ class stackaly(base):
             out_dict = json.loads(out)
         except Exception as e:
             # we may got 404, not found user
-            print e
+            print("Failed to get metric %s for %s" % (metric, usr.user_name))
             out_dict = {u'stats': []}
 
         sys.stdout.write('.')
