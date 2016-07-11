@@ -31,6 +31,7 @@ from datetime import date
 from StringIO import StringIO
 
 import util
+import sys
 
 from base import base
 from usr import user
@@ -78,6 +79,8 @@ class stackaly(base):
             print e
             out_dict = {u'stats': []}
 
+        sys.stdout.write('.')
+        sys.stdout.flush()
         # all_stats = 0
         all_stats = 0
         for it in out_dict['stats']:
