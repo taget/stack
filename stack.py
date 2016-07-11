@@ -70,8 +70,13 @@ class stackaly(base):
 
         out_put = ''
         op = util.genreate_options(request_options)
-        out = util.get_companies(self.conn, self._base_url, op)
-        out_dict = json.loads(out)
+        try:
+            out = util.get_companies(self.conn, self._base_url, op)
+            out_dict = json.loads(out)
+        except Exception as e:
+            # we may got 404, not found user
+            print e
+            out_dict = {u'stats': []}
 
         # all_stats = 0
         all_stats = 0
